@@ -1,0 +1,59 @@
+<template>
+    <lightning-card title="Product List" icon-name="custom:custom14">
+        <div class="slds-p-around_medium">
+            <!-- Cart Display -->
+            <div class="slds-m-bottom_medium">
+                <lightning-badge label="🛒 Cart Items: {cartItems.length}"></lightning-badge>
+                <lightning-button label="View Cart" variant="brand" onclick={openCartModal} class="slds-m-left_small"></lightning-button>
+            </div>
+
+            <!-- Search Bar -->
+            <lightning-input 
+                type="search" 
+                label="Search Products" 
+                placeholder="Enter product name or description..." 
+                onchange={handleSearchChange}>
+            </lightning-input>
+
+            <!-- Product Table -->
+            <template if:true={filteredProducts}>
+                <lightning-datatable 
+                    key-field="Id"
+                    data={filteredProducts}
+                    columns={columns}
+                    onrowaction={handleRowAction}>
+                </lightning-datatable>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- Cart Modal Window -->
+    <template if:true={isCartModalOpen}>
+        <section role="dialog" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">Your Cart</h2>
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeCartModal}>
+                        <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                    </button>
+                </header>
+    
+                <div class="slds-modal__content slds-p-around_medium">
+                    <template if:true={cartItems.length}>
+                        <lightning-datatable key-field="Id" data={cartItems} columns={columns}></lightning-datatable>
+                    </template>
+                    <template if:false={cartItems.length}>
+                        <p>Your cart is empty.</p>
+                    </template>
+                </div>
+    
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={closeCartModal}>Close</button>
+                    <button class="slds-button slds-button_brand" onclick={checkoutCart}>Checkout</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    
+</template>
