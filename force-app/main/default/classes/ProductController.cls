@@ -1,19 +1,30 @@
 public with sharing class ProductController {
     @AuraEnabled(cacheable=true)
     public static List<product_c__c> getProducts(String familyFilter, String typeFilter, String searchTerm) {
-        String query = 'SELECT Id, Name, Description__c, Type__c, Family__c, Image__c, Price__c FROM product_c__c WHERE 1=1';
+        // Start with a base query without 'WHERE 1=1'
+        String query = 'SELECT Id, Name, Description__c, Type__c, Family__c, Image__c, Price__c FROM product_c__c';
         
-        // Apply filters dynamically
+        // Initialize an empty list to store conditions
+        List<String> conditions = new List<String>();
+        
+        // Apply filters dynamically and add conditions to the list
         if (String.isNotBlank(familyFilter)) {
-            query += ' AND Family__c = :familyFilter';
+            conditions.add('Family__c = :familyFilter');
         }
         if (String.isNotBlank(typeFilter)) {
-            query += ' AND Type__c = :typeFilter';
+            conditions.add('Type__c = :typeFilter');
         }
         if (String.isNotBlank(searchTerm)) {
-            query += ' AND (Name LIKE \'%' + searchTerm + '%\' OR Description__c LIKE \'%' + searchTerm + '%\')';
+            String sanitizedSearchTerm = '%' + searchTerm.replaceAll('[^a-zA-Z0-9 ]', '') + '%'; // Remove special chars
+            conditions.add('(Name LIKE :sanitizedSearchTerm OR Description__c LIKE :sanitizedSearchTerm)');
         }
         
+        // If there are conditions, append them to the query
+        if (!conditions.isEmpty()) {
+            query += ' WHERE ' + String.join(conditions, ' AND ');
+        }
+        
+        // Return results with a LIMIT to prevent too many records
         return Database.query(query + ' LIMIT 10');
     }
 
@@ -32,4 +43,5 @@ public with sharing class ProductController {
         insert newProduct;
         return newProduct;
     }
+
 }

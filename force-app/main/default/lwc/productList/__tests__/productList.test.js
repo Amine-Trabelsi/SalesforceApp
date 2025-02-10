@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+//import { createElement } from 'lwc';
 import ProductList from 'c/productList';
 
 describe('c-product-list', () => {

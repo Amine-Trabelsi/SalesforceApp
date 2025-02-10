@@ -5,65 +5,20 @@ import createOrder from '@salesforce/apex/OrderController.createOrder';
 import { NavigationMixin } from 'lightning/navigation';
 import isCurrentUserManager from '@salesforce/apex/ProductController.isCurrentUserManager';
 import createProduct from '@salesforce/apex/ProductController.createProduct';
+//import insertProducts from '@salesforce/apex/ProductController.insertProducts';
 
 export default class ProductList extends NavigationMixin(LightningElement) {
     
-    @track products = [
-        {
-            Id: '001',
-            Name: 'iPhone 14',
-            Description__c: 'Latest Apple smartphone',
-            Type__c: 'Smartphone',
-            Family__c: 'Electronics',
-            Image__c: 'https://example.com/iphone14.jpg',
-            Price__c: 999.99
-        },
-        {
-            Id: '002',
-            Name: 'MacBook Pro',
-            Description__c: 'Powerful Apple laptop',
-            Type__c: 'Laptop',
-            Family__c: 'Electronics',
-            Image__c: 'https://example.com/macbook.jpg',
-            Price__c: 2499.99
-        },
-        {
-            Id: '003',
-            Name: 'Office Chair',
-            Description__c: 'Comfortable ergonomic chair',
-            Type__c: 'Chair',
-            Family__c: 'Furniture',
-            Image__c: 'https://example.com/chair.jpg',
-            Price__c: 199.99
-        },
-        {
-            Id: '004',
-            Name: 'Gaming Laptop',
-            Description__c: 'High-performance gaming laptop',
-            Type__c: 'Laptop',
-            Family__c: 'Electronics',
-            Image__c: 'https://example.com/gaminglaptop.jpg',
-            Price__c: 1599.99
-        },
-        {
-            Id: '005',
-            Name: 'Wooden Table',
-            Description__c: 'Elegant wooden dining table',
-            Type__c: 'Table',
-            Family__c: 'Furniture',
-            Image__c: 'https://example.com/table.jpg',
-            Price__c: 499.99
-        }
-    ];
+    @track products;
 
-    @track filteredProducts = [...this.products];
+    @track filteredProducts = [];
     @track cartItems = [];
     @track selectedProduct = null;
     @track isModalOpen = false;
     @track isCartModalOpen = false;
 
     @api recordId; // Account ID for the order
-    DEFAULT_ACCOUNT_ID = "001d200000IpF13AAF";
+    @api DEFAULT_ACCOUNT_ID = "001d200000IpF13AAF";
 
     selectedFamily = '';
     selectedType = '';
@@ -101,30 +56,31 @@ export default class ProductList extends NavigationMixin(LightningElement) {
         }
     ];
 
-    // @wire(getProducts, { familyFilter: '$selectedFamily', typeFilter: '$selectedType', searchTerm: '$searchTerm' })
-    // wiredProducts({ error, data }) {
-    //     if (data) {
-    //         this.products = data;
-    //         this.applyFilters();
-    //     } else if (error) {
-    //         this.products = [];
-    //         this.filteredProducts = [];
-    //         console.error('Error fetching products:', error);
-    //     }
-    // }
-
-    applyFilters() {
-        this.filteredProducts = this.products.filter(product => {
-            const matchesFamily = this.selectedFamily ? product.Family__c === this.selectedFamily : true;
-            const matchesType = this.selectedType ? product.Type__c === this.selectedType : true;
-            const matchesSearch = this.searchTerm
-                ? product.Name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                  product.Description__c.toLowerCase().includes(this.searchTerm.toLowerCase())
-                : true;
-
-            return matchesFamily && matchesType && matchesSearch;
-        });
-    }
+        // Wire service to fetch products and filter them based on selected family/type and search term
+        @wire(getProducts, { familyFilter: '$selectedFamily', typeFilter: '$selectedType', searchTerm: '$searchTerm' })
+        wiredProducts({ error, data }) {
+            if (data) {
+                this.products = data;  // Store products data
+                this.applyFilters();  // Apply any filters to the products
+            } else if (error) {
+                this.products = [];
+                this.filteredProducts = [];
+                console.error('Error fetching products:', error);
+            }
+        }
+    
+        applyFilters() {
+            this.filteredProducts = this.products.filter(product => {
+                const matchesFamily = this.selectedFamily ? product.Family__c === this.selectedFamily : true;
+                const matchesType = this.selectedType ? product.Type__c === this.selectedType : true;
+                const matchesSearch = this.searchTerm
+                    ? product.Name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      product.Description__c.toLowerCase().includes(this.searchTerm.toLowerCase())
+                    : true;
+    
+                return matchesFamily && matchesType && matchesSearch;
+            });
+        }
 
     handleRowAction(event) {
         const row = event.detail.row;
@@ -150,7 +106,6 @@ export default class ProductList extends NavigationMixin(LightningElement) {
     }
 
     async checkoutCart() {
-        
         if (!this.cartItems.length) {
             this.showToast('Error', 'Your cart is empty!', 'error');
             return;
@@ -162,9 +117,9 @@ export default class ProductList extends NavigationMixin(LightningElement) {
             this.showToast('Error', 'No Account selected for this order!', 'error');
             return;
         }
-
+        console.log("SKIPPED!");
         try {
-            const orderId = await createOrder({
+            const orderJson = JSON.stringify({
                 cartItems: this.cartItems.map(item => ({
                     productId: item.Id,
                     price: item.Price__c,
@@ -172,8 +127,11 @@ export default class ProductList extends NavigationMixin(LightningElement) {
                 })),
                 accountId: accountId,
             });
-
-            this.showToast('Success', `Order ${orderId} created successfully!`, 'success');
+            console.log("OUT\n");
+            console.log(orderJson);
+            const orderId = await createOrder({orderJson});
+            //const orderId = 'faewfDFSAF132';
+            this.showToast('Success', `Order created successfully!`, 'success');
             this.cartItems = []; // Clear the cart after checkout
 
             // Redirect to the created Order record page

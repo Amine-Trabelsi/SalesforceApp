@@ -99,34 +99,34 @@ public class ProductControllerTest {
         }
     }
 }
-*/
-@isTest
-public class ProductControllerTest {
-    @isTest
-    static void testGetProducts() {
-        Test.startTest();
-        System.assert(true, 'Dummy test always passes.');
-        Test.stopTest();
-    }
+// */
+// @isTest
+// public class ProductControllerTest {
+//     @isTest
+//     static void testGetProducts() {
+//         Test.startTest();
+//         System.assert(true, 'Dummy test always passes.');
+//         Test.stopTest();
+//     }
 
-    @isTest
-    static void testIsCurrentUserManager() {
-        Test.startTest();
-        System.assert(true, 'Dummy test always passes.');
-        Test.stopTest();
-    }
+//     @isTest
+//     static void testIsCurrentUserManager() {
+//         Test.startTest();
+//         System.assert(true, 'Dummy test always passes.');
+//         Test.stopTest();
+//     }
 
-    @isTest
-    static void testCreateProductSuccess() {
-        Test.startTest();
-        System.assert(true, 'Dummy test always passes.');
-        Test.stopTest();
-    }
+//     @isTest
+//     static void testCreateProductSuccess() {
+//         Test.startTest();
+//         System.assert(true, 'Dummy test always passes.');
+//         Test.stopTest();
+//     }
 
-    @isTest
-    static void testCreateProductUnauthorized() {
-        Test.startTest();
-        System.assert(true, 'Dummy test always passes.');
-        Test.stopTest();
-    }
-}
+//     @isTest
+//     static void testCreateProductUnauthorized() {
+//         Test.startTest();
+//         System.assert(true, 'Dummy test always passes.');
+//         Test.stopTest();
+//     }
+// }

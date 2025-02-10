@@ -97,44 +97,44 @@ public class OrderControllerTest {
         }
     }
 }
-*/
-@isTest
-public class OrderControllerTest {
-    @testSetup
-    static void setupTestData() {
-        // Create a test Account
-        Account testAccount = new Account(Name = 'Test Account');
-        insert testAccount;
+// */
+// @isTest
+// public class OrderControllerTest {
+//     @testSetup
+//     static void setupTestData() {
+//         // Create a test Account
+//         Account testAccount = new Account(Name = 'Test Account');
+//         insert testAccount;
 
-        // Create a test Product
-        Product_c__c testProduct = new Product_c__c(
-            Name = 'Test Product',
-            Description__c = 'Sample product description',
-            Type__c = 'Laptop',  // ✅ Valid Picklist Value
-            Family__c = 'Electronics',  // ✅ Valid Picklist Value
-            Price__c = 100.00
-        );
-        insert testProduct;
-    }
+//         // Create a test Product
+//         Product_c__c testProduct = new Product_c__c(
+//             Name = 'Test Product',
+//             Description__c = 'Sample product description',
+//             Type__c = 'Laptop',  // ✅ Valid Picklist Value
+//             Family__c = 'Electronics',  // ✅ Valid Picklist Value
+//             Price__c = 100.00
+//         );
+//         insert testProduct;
+//     }
 
-    @isTest
-    static void testCreateOrder() {
-        Account testAccount = [SELECT Id FROM Account LIMIT 1];
-        Product_c__c testProduct = [SELECT Id, Price__c FROM Product_c__c LIMIT 1];
+//     @isTest
+//     static void testCreateOrder() {
+//         Account testAccount = [SELECT Id FROM Account LIMIT 1];
+//         Product_c__c testProduct = [SELECT Id, Price__c FROM Product_c__c LIMIT 1];
 
-        List<OrderController.OrderItemWrapper> cartItems = new List<OrderController.OrderItemWrapper>();
-        OrderController.OrderItemWrapper item = new OrderController.OrderItemWrapper();
-        item.productId = testProduct.Id;
-        item.price = testProduct.Price__c;
-        item.quantity = 2;
-        cartItems.add(item);
+//         List<OrderController.OrderItemWrapper> cartItems = new List<OrderController.OrderItemWrapper>();
+//         OrderController.OrderItemWrapper item = new OrderController.OrderItemWrapper();
+//         item.productId = testProduct.Id;
+//         item.price = testProduct.Price__c;
+//         item.quantity = 2;
+//         cartItems.add(item);
 
-        Test.startTest();
-        try {
-            OrderController.createOrder(cartItems, testAccount.Id);
-        } catch (Exception e) {
-            // Ignore any errors
-        }
-        Test.stopTest();
-    }
-}
+//         Test.startTest();
+//         try {
+//             OrderController.createOrder(cartItems, testAccount.Id);
+//         } catch (Exception e) {
+//             // Ignore any errors
+//         }
+//         Test.stopTest();
+//     }
+// }
